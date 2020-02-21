@@ -1,0 +1,125 @@
+---
+title: "regression problem"
+author: "dr. J"
+date: "2/16/2020"
+output: html_document
+---
+
+# Introduction:
+Data are from the website http://fueleconomy.gov 
+This is a problem in modeling/prediction.
+The idea is this:  Fuel efficiency from 2010 and 2011 passenger cars and light trucks is provied.  Using data from 2010, find the best model to predict fuel effiency; fit the model using data from 2010, and evaluate model performance using 2011 data.  
+
+Questions:  
+1. Is there evidence of an improvemet in fuel efficiency from 2010 t 2011?  
+2. What variables are most significant predictors of fuel efficienty?  
+3. Suggest ways in which fuel efficienty could be improved in future years.  
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(AppliedPredictiveModeling)
+```
+
+data set: fuel economy from US Gov't website
+
+```{r}
+data(FuelEconomy)
+library(lattice)
+
+```
+### Plot shown in the text:
+load the data
+FE is fuel economy
+
+```{r}
+cars2010 <- cars2010[order(cars2010$EngDispl),]
+cars2011 <- cars2011[order(cars2011$EngDispl),]
+cars2010a <- cars2010
+cars2010a$Year <- "2010 Model Year"
+cars2011a <- cars2011
+cars2011a$Year <- "2011 Model Year"
+plotData <- rbind(cars2010a, cars2011a)
+plotTheme <- bookTheme(FALSE)
+plotTheme$plot.symbol$col <- rgb(.2, .2, .2, .5)
+plotTheme$plot.symbol$cex <- 0.7
+trellis.par.set(plotTheme)
+
+xyplot(FE ~ EngDispl|Year, plotData,
+xlab = "Engine Displacement",
+ylab = "Fuel Efficiency (MPG)",
+between = list(x = 1.2))
+
+```
+
+### variables in the data set:
+
+```{r}
+names(cars2010a)
+```
+
+
+### regession fit
+
+```{r}
+model1 = glm(FE~ EngDispl, data=cars2010a)
+summary(model1)
+plot(cars2010a$EngDispl, cars2010a$FE, xlab = 'Engine Displacement, L', ylab = 'Fuel Efficiency, MPG')
+abline(model1, col='red')
+```
+
+### how does this fit model year 2011?
+```{r}
+plot(cars2011a$EngDispl, cars2011a$FE, xlab = 'Engine Displacement,L',ylab='MPG')
+x = cars2011a$EngDispl
+y = model1$coefficients[1] + model1$coefficients[2]*x
+lines(x,y, col='red')
+```
+
+
+
+may benefit from a second order term
+
+```{r}
+model2 = glm(FE~ EngDispl + I(EngDispl^2), data = cars2010a)
+
+summary(model2)
+```
+
+### include transmission in the equation:
+
+```{r}
+levels(cars2010a$Transmission)
+model3 = glm(FE~ EngDispl+Transmission, data = cars2010a)
+summary(model3)
+
+```
+
+
+
+### predictions
+```{r}
+plot(cars2011a$EngDispl, cars2011a$FE, ylab='MPG', xlab='Engine displacement, L')
+newData = cars2011a
+y = predict(model3, newdata = cars2011a)
+
+lines(cars2011a$EngDispl,y, col='grey')
+
+#fit a smooth line to y then plot
+ySmooth= glm(y~cars2011a$EngDispl)
+summary(ySmooth)
+abline(ySmooth, col='red')
+
+```
+
+Transmission effects ??
+
+```{r}
+
+model3AOV = aov(cars2010a$FE~cars2010a$Transmission)
+summary(model3AOV)
+TukeyHSD(model3AOV)
+```
+
+
+
