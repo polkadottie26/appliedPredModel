@@ -111,6 +111,27 @@ for (i in 1:length(cars2010a$IntakeValvePerCyl)) {
 
 There are 2.
 
+## Question 1. Is there evidence of an improvement in fuel efficiency from 2010 to 2011? 
+
+Pull out the fuel efficiency from 2010 and 2011 data set and compare the mean difference.
+
+Need to perform a t-test. Null and alternative hypothesis.
+
+$H_0$: no difference between FE in 2010 and 2011
+$H_A$: there is a difference in FE between 2010 and 2011
+
+We'll use a t-test for this inference:
+
+```{r}
+t.test(cars2010a$FE, cars2011a$FE)
+```
+
+# Answer to Quesetion 1:
+
+There is no evidence/difference in Fuel Efficiency from 2010 data set to 2011 data set because of the high P-value.
+
+
+
 ### regession fit
 
 ```{r}
