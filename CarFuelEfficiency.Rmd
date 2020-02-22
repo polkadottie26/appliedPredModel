@@ -1,7 +1,7 @@
 ---
 title: "regression problem"
-author: "dr. J"
-date: "2/16/2020"
+author: "Jacky/Dottie"
+date: "2/21/2020"
 output: html_document
 ---
 
@@ -11,7 +11,7 @@ This is a problem in modeling/prediction.
 The idea is this:  Fuel efficiency from 2010 and 2011 passenger cars and light trucks is provied.  Using data from 2010, find the best model to predict fuel effiency; fit the model using data from 2010, and evaluate model performance using 2011 data.  
 
 Questions:  
-1. Is there evidence of an improvemet in fuel efficiency from 2010 t 2011?  
+1. Is there evidence of an improvement in fuel efficiency from 2010 to 2011?  
 2. What variables are most significant predictors of fuel efficienty?  
 3. Suggest ways in which fuel efficienty could be improved in future years.  
 
@@ -19,6 +19,8 @@ Questions:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(AppliedPredictiveModeling)
+
+library(dplyr)
 ```
 
 data set: fuel economy from US Gov't website
@@ -58,6 +60,56 @@ between = list(x = 1.2))
 names(cars2010a)
 ```
 
+Try transmissions = AV, AM6, and AM7
+
+```{r}
+#levels(cars2010a$Transmission)
+
+testTranny = filter(cars2010a, Transmission %in% c('AV','AM6'))
+
+trannyModel = glm(FE ~ Transmission, data = testTranny)
+summary(trannyModel)
+
+mean(testTranny$FE)
+print(mean(testTranny$FE))
+```
+
+AM7 is no different from AM6 because is not significant because of Pr(>|t|) = 0.211 which is greater than 0.05, so we remove it.
+
+AM6 = AIC: 466.37, AM7 = AIC: 427.5, which means if you had to choose between 6-speed or 7-speed, it's better to go with a 7-speed transmission vehicle.
+
+
+Try adding AirAspirationMethod to see what it does.
+
+```{r}
+#levels(cars2010a$AirAspirationMethod)
+
+trannyAirModel = glm(FE ~ Transmission + AirAspirationMethod, data = testTranny)
+summary(trannyAirModel)
+```
+
+AirAspirationMethodTurbocharged makes no significant difference.
+
+Next, try ExhaustValvesPerCyl to see what happens.
+
+```{r}
+#levels(cars2010a$ExhaustValvesPerCyl)
+
+trannyValveModel = glm(FE ~ Transmission + ExhaustValvesPerCyl, data = testTranny)
+summary(trannyValveModel)
+```
+
+ExhaustValvesPerCyl does not make any difference because there are no astericks next to 0.07386
+
+```{r}
+for (i in 1:length(cars2010a$IntakeValvePerCyl)) {
+  if (cars2010a$IntakeValvePerCyl[i] == 0) print('found one')
+}
+
+#count(cars2010a$IntakeValvePerCyl == 0)
+```
+
+There are 2.
 
 ### regession fit
 
