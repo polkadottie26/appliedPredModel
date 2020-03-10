@@ -132,6 +132,8 @@ There is no evidence/difference in Fuel Efficiency from 2010 data set to 2011 da
 
 As an aside, is there a difference between average FE in 2010 and 2012
 
+## 2. What variables are most significant predictors of fuel efficienty?
+
 ```{r}
 t.test(cars2010a$FE, cars2012$FE)
 
@@ -179,6 +181,10 @@ summary(model2)
 anova(model2)
 ```
 
+## Answer to Question 2
+
+We figured out that the drive type is significant. And TransCreeperGear had a significant effect. We also found out that the AirAspiration made no difference in terms of fuel efficiency.
+
 Make a prediction for 2011
 
 ```{r}
@@ -195,4 +201,6 @@ boxplot(pred2011, main='data from 2011 model2')
 t.test(cars2010a$FE, pred2011)
 ```
 
-## 2. What variables are most significant predictors of fuel efficienty?
+## 3. Suggest ways in which fuel efficienty could be improved in future years.
+
+A suggestion is to use TwoWheelDriveFront. Another suggestion would be to leave out TransCreeperGear out of the equation.
