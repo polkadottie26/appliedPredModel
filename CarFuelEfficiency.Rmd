@@ -134,70 +134,65 @@ As an aside, is there a difference between average FE in 2010 and 2012
 
 ```{r}
 t.test(cars2010a$FE, cars2012$FE)
+
+par(mrow=2)
+    hist(cars2010a$FE)
+hist(cars2012$FE)
 ```
 
 
-### regession fit
+## ANOVA
 
 ```{r}
-model1 = glm(FE~ EngDispl, data=cars2010a)
+model1 = glm(FE~EngDispl+
+                NumCyl +
+                AirAspirationMethod +
+                TransCreeperGear +
+                DriveDesc
+              ,data=cars2010a)
+
 summary(model1)
-plot(cars2010a$EngDispl, cars2010a$FE, xlab = 'Engine Displacement, L', ylab = 'Fuel Efficiency, MPG')
-abline(model1, col='red')
+
+anova(model1)
+
+# [1] "EngDispl"            "NumCyl"             
+# [3] "Transmission"        "FE"                 
+# [5] "AirAspirationMethod" "NumGears"           
+# [7] "TransLockup"         "TransCreeperGear"   
+# [9] "DriveDesc"           "IntakeValvePerCyl"  
+#[11] "ExhaustValvesPerCyl" "CarlineClassDesc"   
+#[13] "VarValveTiming"      "VarValveLift"       
+#[15] "Year"  
+
 ```
 
-### how does this fit model year 2011?
-```{r}
-plot(cars2011a$EngDispl, cars2011a$FE, xlab = 'Engine Displacement,L',ylab='MPG')
-x = cars2011a$EngDispl
-y = model1$coefficients[1] + model1$coefficients[2]*x
-lines(x,y, col='red')
-```
-
-
-
-may benefit from a second order term
+It appears that TransCreeperGear is a drag so we are going to leave it out; drive desc: front two wheel
 
 ```{r}
-model2 = glm(FE~ EngDispl + I(EngDispl^2), data = cars2010a)
+pruned2010a = filter(cars2010a, TransCreeperGear==0 &
+                     DriveDesc=='TwoWheelDriveFront' & EngDispl < 3)
+model2 = glm(FE~EngDispl
+              ,data=pruned2010a)
 
 summary(model2)
+
+anova(model2)
 ```
 
-### include transmission in the equation:
+Make a prediction for 2011
 
 ```{r}
-levels(cars2010a$Transmission)
-model3 = glm(FE~ EngDispl+Transmission, data = cars2010a)
-summary(model3)
+pred2011 = predict(model2, cars2011a)
 
+#print(pred2011)
+hist(pred2011)
+boxplot(pred2011, main='data from 2011 model2')
 ```
 
-
-
-### predictions
-```{r}
-plot(cars2011a$EngDispl, cars2011a$FE, ylab='MPG', xlab='Engine displacement, L')
-newData = cars2011a
-y = predict(model3, newdata = cars2011a)
-
-lines(cars2011a$EngDispl,y, col='grey')
-
-#fit a smooth line to y then plot
-ySmooth= glm(y~cars2011a$EngDispl)
-summary(ySmooth)
-abline(ySmooth, col='red')
-
-```
-
-Transmission effects ??
+## Compare average fule efficiency for 2011 cars using model1 to fuel efficiency for all cars in 2010
 
 ```{r}
-
-model3AOV = aov(cars2010a$FE~cars2010a$Transmission)
-summary(model3AOV)
-TukeyHSD(model3AOV)
+t.test(cars2010a$FE, pred2011)
 ```
 
-
-
+## 2. What variables are most significant predictors of fuel efficienty?
