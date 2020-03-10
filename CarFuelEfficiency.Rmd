@@ -13,7 +13,7 @@ The idea is this:  Fuel efficiency from 2010 and 2011 passenger cars and light t
 Questions:  
 1. Is there evidence of an improvement in fuel efficiency from 2010 to 2011?  
 2. What variables are most significant predictors of fuel efficienty?  
-3. Suggest ways in which fuel efficienty could be improved in future years.  
+3. Suggest ways in which fuel efficienty could be improved in future years.   
 
 
 ```{r setup, include=FALSE}
