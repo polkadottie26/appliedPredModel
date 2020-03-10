@@ -130,6 +130,11 @@ t.test(cars2010a$FE, cars2011a$FE)
 
 There is no evidence/difference in Fuel Efficiency from 2010 data set to 2011 data set because of the high P-value.
 
+As an aside, is there a difference between average FE in 2010 and 2012
+
+```{r}
+t.test(cars2010a$FE, cars2012$FE)
+```
 
 
 ### regession fit
